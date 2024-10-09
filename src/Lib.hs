@@ -22,6 +22,7 @@ module Lib
     splitRange,
     splitRangeT,
     cross,
+    minvert,
   )
 where
 
@@ -36,6 +37,7 @@ import qualified Data.HashMap.Lazy as M
 import Data.Hashable (Hashable)
 import qualified Data.List as L
 import Data.Range
+import Data.Tuple
 import Data.Vector (Vector)
 import qualified Data.Vector as V
 import Linear.V2
@@ -166,3 +168,6 @@ splitRangeT order x = (((,) <$> view (ol order) <*> head . union [x +=+ x] . ret
 
 cross :: (Num a) => V2 a -> a
 cross (V2 a b) = a * b
+
+minvert :: (Hashable a, Semigroup t) => HashMap k a -> HashMap a (t k)
+minvert = foldl (\m (k, v) -> M.insertWith (concat) k v m) M.empty . map (over _2 return . swap) . M.toList
